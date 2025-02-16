@@ -16,7 +16,7 @@ COPY . .
 # Build the React Vite application
 RUN npm run build
 
-# Use Nginx to serve the built app
+# Use Nginx to serve the built app 
 FROM nginx:alpine
 
 # Copy the built files
