@@ -1,11 +1,12 @@
 import { Button } from "./ui/Button"
 import { Check } from "lucide-react"
+import classroom from "../assets/classroom.png"
 
 export default function Integrations() {
   const integrations = [
     {
       name: "Google Classroom",
-      logo: "https://placehold.co/200x80",
+      logo: "https://github.com/Karmpatel960/Project-ATLAS/tree/feature/web/frontend/src/assets/classroom.png",
       description: "Sync your Google Classroom courses, assignments, and student roster with our platform.",
       features: ["Roster sync", "Assignment integration", "Grade passback", "Single sign-on"],
       buttonText: "Connect Google Classroom",

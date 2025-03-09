@@ -1,4 +1,5 @@
 import { Button } from "./ui/Button"
+import image from "../assets/poster.svg"
 
 export default function Hero() {
   return (
@@ -37,7 +38,7 @@ export default function Hero() {
           <div className="flex items-center justify-center">
             <div className="relative w-full max-w-[500px] aspect-video overflow-hidden rounded-xl shadow-2xl">
               <img
-                src="../"
+                src={image}
                 alt="Virtual classroom interface showing students and teacher in a video call"
                 className="object-cover w-full h-full"
               />
