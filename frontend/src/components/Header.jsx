@@ -1,10 +1,9 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Menu, X, GraduationCap } from "lucide-react"
-import { Button } from "./ui/Button"
-import { ThemeToggle } from "./ThemeToggle"
-import { cn } from "../lib/utils"
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { Menu, X, GraduationCap } from 'lucide-react'
+import { Button } from './ui/Button'
+import { ThemeToggle } from './ThemeToggle'
+import { cn } from '../lib/utils'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -18,27 +17,25 @@ export default function Header() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener('scroll', handleScroll)
     return () => {
-      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [scrolled])
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        scrolled
-          ? "bg-background/80 backdrop-blur-md shadow-md py-2 px-4 md:px-6 mx-auto max-w-7xl rounded-full mt-4"
-          : "bg-transparent py-4 px-4 md:px-6",
-      )}
-    >
+    <header className={cn(
+      "sticky top-0 z-50 w-full transition-all duration-300",
+      scrolled 
+        ? "bg-background/80 backdrop-blur-md shadow-md py-2 px-4 md:px-6 mx-auto max-w-7xl rounded-full mt-4" 
+        : "bg-transparent py-4 px-4 md:px-6"
+    )}>
       <div className="flex h-16 items-center justify-between">
-        <a href="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <GraduationCap className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold">ATLAS</span>
-        </a>
-
+        </Link>
+        
         <nav className="hidden md:flex items-center gap-6">
           <a href="#features" className="text-sm font-medium hover:text-primary">
             Features
@@ -53,53 +50,72 @@ export default function Header() {
             Testimonials
           </a>
         </nav>
-
+        
         <div className="hidden md:flex items-center gap-4">
           <ThemeToggle />
-          <Button variant="outline" size="sm">
-            Log in
-          </Button>
-          <Button size="sm">Sign up</Button>
+          <Link to="/login">
+            <Button variant="outline" size="sm">
+              Log in
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button size="sm">Sign up</Button>
+          </Link>
         </div>
-
+        
         <div className="flex items-center md:hidden gap-2">
           <ThemeToggle />
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+          >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
-
+      
       {isMenuOpen && (
         <div className="md:hidden border-t p-4 bg-background/95 backdrop-blur-sm mt-2 rounded-lg">
           <nav className="flex flex-col gap-4">
-            <a href="#features" className="text-sm font-medium hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+            <a 
+              href="#features" 
+              className="text-sm font-medium hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Features
             </a>
-            <a
-              href="#integrations"
+            <a 
+              href="#integrations" 
               className="text-sm font-medium hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
               Integrations
             </a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+            <a 
+              href="#pricing" 
+              className="text-sm font-medium hover:text-primary"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Pricing
             </a>
-            <a
-              href="#testimonials"
+            <a 
+              href="#testimonials" 
               className="text-sm font-medium hover:text-primary"
               onClick={() => setIsMenuOpen(false)}
             >
               Testimonials
             </a>
             <div className="flex flex-col gap-2 mt-4">
-              <Button variant="outline" size="sm" className="w-full">
-                Log in
-              </Button>
-              <Button size="sm" className="w-full">
-                Sign up
-              </Button>
+              <Link to="/login" className="w-full">
+                <Button variant="outline" size="sm" className="w-full">
+                  Log in
+                </Button>
+              </Link>
+              <Link to="/signup" className="w-full">
+                <Button size="sm" className="w-full">
+                  Sign up
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>
@@ -107,4 +123,5 @@ export default function Header() {
     </header>
   )
 }
+
 

@@ -1,26 +1,25 @@
 import { Button } from "./ui/Button"
 import { Check } from "lucide-react"
-import classroom from "../assets/classroom.png"
 
 export default function Integrations() {
   const integrations = [
     {
       name: "Google Classroom",
-      logo: "https://github.com/Karmpatel960/Project-ATLAS/tree/feature/web/frontend/src/assets/classroom.png",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/5/59/Google_Classroom_Logo.png",
       description: "Sync your Google Classroom courses, assignments, and student roster with our platform.",
       features: ["Roster sync", "Assignment integration", "Grade passback", "Single sign-on"],
       buttonText: "Connect Google Classroom",
     },
     {
       name: "Google Meet",
-      logo: "https://placehold.co/200x80",
+      logo: "https://cdn4.iconfinder.com/data/icons/logos-brands-in-colors/48/google-meet-1024.png",
       description: "Launch Google Meet sessions directly from our platform with enhanced teaching tools.",
       features: ["One-click launch", "Recording integration", "Attendance tracking", "Enhanced controls"],
       buttonText: "Connect Google Meet",
     },
     {
       name: "Microsoft Teams",
-      logo: "https://placehold.co/200x80",
+      logo: "https://img.icons8.com/?size=96&id=w4GK9hbJaqEc&format=png",
       description: "Integrate with Microsoft Teams for seamless communication and collaboration.",
       features: ["Teams channel integration", "File sharing", "Calendar sync", "Meeting scheduling"],
       buttonText: "Connect Microsoft Teams",
