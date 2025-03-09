@@ -1,8 +1,7 @@
-# Define the variables with default values
 variable "region" {
   description = "AWS region to deploy resources"
   type        = string
-  default     = "us-east-1"
+  default     = "ap-south-1"
 }
 
 variable "vpc_cidr" {
@@ -27,4 +26,16 @@ variable "project_name" {
   description = "Name of the project"
   type        = string
   default     = "react-nginx-app"
+}
+
+variable "environment" {
+  description = "Environment name (e.g., dev, prod)"
+  type        = string
+  default     = "dev"
+}
+
+variable "public_key" {
+  description = "Public key for EC2 SSH access"
+  type        = string
+  # This will be provided by the pipeline
 }
