@@ -1,0 +1,7 @@
+django==3.0
+django-phonenumber-field
+phonenumbers
+email_validator
+django-crispy-forms
+jsonfield
+pillow

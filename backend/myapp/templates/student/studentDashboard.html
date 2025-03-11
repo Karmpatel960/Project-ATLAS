@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Page
+{% endblock %}
+{% block content %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center px-lg-5">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'studentDashboard' %}" class="logo d-flex align-items-center">
+        <img src="" alt="">
+        <span class=" d-lg-block">VirtualClassroom</span>
+      </a>
+    </div><!-- End Logo -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{ userDetails.studentPic.url }}" alt="Profile" class="rounded-circle" style="width:40px;">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{user.first_name}} {{user.last_name}}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{user.first_name}} {{user.last_name}}</h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'studentProfile' %}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+
+            {% if user.is_authenticated %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'studentLogout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% endif %}
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+
+  <main id="main" class="main px-lg-5 mx-lg-5">
+
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'studentDashboard' %}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+          {% include 'partials/_alert.html'%}
+
+
+          {% if classList %}
+            {% for class in classList %}
+                <div class="col-xxl-6 col-lg-12">
+                  <a href="{% url 'studentSubject' class.pk %}">
+                    <div class="card info-card sales-card pb-0">
+                     <div class="row g-0" style="background: #4154f1">
+                       <div class="col-md-4 align-self-center ">
+                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" style="height: 5rem; width:5rem;">
+                           <i class="bi bi-easel" style="font-size: 2.5rem;"></i>
+                         </div>
+                       </div>
+                       <div class="col-md-8 bg-white">
+                         <div class="card-body my-1  mt-2 mb-0">
+                           <!-- <h5 class="card-title mb-0 pt-2 pb-0" style=" font-size:22px;">{{class.classname | truncatechars:20}}</h5>
+                           <h5 class="card-title mt-0 pt-1" style="font-size:15px;">Class Code : {{class.pk}}</h5> -->
+
+                           <h5 class="card-title  mb-0 pt-2 pb-0" style="text-transform: uppercase;">CLASS NAME : </h5>
+                           <h5 class="card-title mt-0 pt-1 mb-0" style="font-size:15px;">{{class.classname | truncatechars:20}}</h5>
+                           <h5 class="card-title mt-0 pt-1 my-0" style="font-size:15px;">CLASS CODE : <strong>{{class.pk}}</strong></h5>
+                           <h5 class="card-title  mb-0 pt-2 pb-0" style="text-transform: uppercase;">DEPARTMENT :</h5>
+                           <h5 class="card-title mt-0 pt-1" style="font-size:15px;">{{class.classDepartment | truncatechars:25}}</h5>
+                           <h5 class="card-title  mb-0 pt-2 pb-0" style="text-transform: uppercase;">FACULTY NAME :</h5>
+                           <h5 class="card-title mt-0 pt-1" style="font-size:15px;">{{class.classFacultyName | truncatechars:28}}</h5>
+
+                           <!-- <h5 class="card-title pt-0" style="text-transform: uppercase;">DEPARTMENT : <br><span>{{class.classDepartment | truncatechars:28}}</span></h5> -->
+                           <!-- <h5 class="card-title pt-0" style="text-transform: uppercase;">FACULTY : <br><span>{{class.classFacultyName | truncatechars:28}}</span></h5> -->
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                  </a>
+              </div>
+            {% endfor %}
+          {% else %}
+          <div class="">
+            <div class="card info-card sales-card pb-0 ">
+             <div class="row g-0" style="background: #F52664">
+               <div class="col-md-3 my-lg-4  pl-0  align-self-center ">
+                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                   <i class="bi bi-emoji-smile" style="color: #F52664"  ></i>
+                 </div>
+               </div>
+               <div class="col-md-9 py-lg-4 bg-white">
+                 <div class="card-body  mt-2 mb-0">
+                   <h5 class="card-title text-center ">NO CLASSROOM JOINED YET!</h5>
+                 </div>
+               </div>
+             </div>
+           </div>
+          </div>
+          {% endif %}
+
+          </div>
+
+        </div><!-- End Left side columns -->
+
+
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+          <div class="col-xxl-10 col-xl-12">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#joinClassroom">
+              <div class="card info-card sales-card pb-0">
+               <div class="row g-0" style="background: #FFC300">
+                 <div class="col-md-4 align-self-center ">
+                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                     <i class="bi bi-patch-plus" style="color: #FFC300"  ></i>
+                   </div>
+                 </div>
+                 <div class="col-md-8 bg-white">
+                   <div class="card-body my-1  mt-2 mb-0">
+                     <h5 class="card-title text-center ">JOIN <br>CLASSROOM</h5>
+                   </div>
+                 </div>
+               </div>
+             </div>
+            </a>
+
+            <!-- Modal for Joining Classroom -->
+            <form class="needs-validation" method="POST" novalidate>
+              {% csrf_token %}
+              <div class="modal fade" id="joinClassroom" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Join ClassRoom</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                      <div class="modal-body">
+                        <div class="col-md-12">
+                          <div class="form-floating">
+                            <input type="text" name="classJoinCode" class="form-control" id="classJoinCode" placeholder="Enter the Code" required>
+                            <label for="classJoinCode">Clasroom Code</label>
+                            <div class="invalid-feedback">Please enter the Classroom Code</div>
+                          </div>
+                        </div>
+                      </div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="classJoin" class="btn btn-primary">Join</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form><!-- End Modal for Joining Classroom-->
+          </div><!-- End Create Classroom Card -->
+
+        </div><!-- End Right side columns -->
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <script type="text/javascript">
+    // You could easily add more colors to this array.
+    var colors = ['RGB(247, 202, 201)', '#34568B', '#FF6F61', 'RGB(239, 192, 80)', 'RGB(225, 93, 68)', '#F5DF4D'];
+    var boxes = document.querySelectorAll(".box");
+
+    for (i = 0; i < boxes.length; i++) {
+      // Pick a random color from the array 'colors'.
+      boxes[i].style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+  </script>
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/_footer.html'%}
+  <!-- ======= Footer Ends ======= -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+{% endblock %}
