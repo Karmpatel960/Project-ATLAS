@@ -2,6 +2,7 @@ import re
 import random
 import string
 import json
+from django.http import JsonResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from datetime import datetime,date
@@ -20,8 +21,131 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import auth
 from .models import *
+from .serializers import *
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+# -----------------------------------
+# API Section
+# -----------------------------------
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_list(request):
+    if request.method == 'GET':
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def faculty_details_list(request):
+    if request.method == 'GET':
+        faculty_details = FacultyDetails.objects.all()
+        serializer = FacultyDetailsSerializer(faculty_details, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_details_list(request):
+    if request.method == 'GET':
+        student_details = StudentDetails.objects.all()
+        serializer = StudentDetailsSerializer(student_details, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def classroom_list(request):
+    if request.method == 'GET':
+        classrooms = ClassRoom.objects.all()
+        serializer = ClassRoomSerializer(classrooms, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = ClassRoomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def announcement_list(request):
+    if request.method == 'GET':
+        announcements = Announcement.objects.all()
+        serializer = AnnouncementSerializer(announcements, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = AnnouncementSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def assignment_list(request):
+    if request.method == 'GET':
+        assignments = Assignment.objects.all()
+        serializer = AssignmentSerializer(assignments, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = AssignmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def classroom_students_list(request):
+    if request.method == 'GET':
+        classroom_students = ClassroomStudentsList.objects.all()
+        serializer = ClassroomStudentsListSerializer(classroom_students, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = ClassroomStudentsListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def student_classroom_list(request):
+    if request.method == 'GET':
+        student_classrooms = StudentClassroomList.objects.all()
+        serializer = StudentClassroomListSerializer(student_classrooms, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = StudentClassroomListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def attendance_list(request):
+    if request.method == 'GET':
+        attendances = Attendence.objects.all()
+        serializer = AttendenceSerializer(attendances, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = AttendenceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+# -----------------------------------
 
 # Landing Page
 def landing(request):
