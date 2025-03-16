@@ -42,6 +42,7 @@ export default function DashboardLayout({ children }) {
     { name: 'Students', href: '/dashboard/students', icon: Users },
     { name: 'Classes', href: '/dashboard/classes', icon: BookOpen },
     { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar },
+    { name: 'Integrations', href: '/dashboard/integrations', icon: LayoutDashboard },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ]
 
