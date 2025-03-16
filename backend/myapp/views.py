@@ -20,8 +20,8 @@ from django.core.mail import send_mail, EmailMessage
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import auth
-from .models import *
-from .serializers import *
+from .models import FacultyDetails,StudentDetails,ClassRoom,Announcement,Assignment,ClassroomStudentsList,StudentClassroomList,Attendence,OfflineClass,VaccineStatus
+from .serializers import UserSerializer,FacultyDetailsSerializer,StudentDetailsSerializer,ClassRoomSerializer,AnnouncementSerializer,AssignmentSerializer,ClassroomStudentsListSerializer,StudentClassroomListSerializer,AttendenceSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
