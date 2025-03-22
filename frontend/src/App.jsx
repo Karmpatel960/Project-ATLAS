@@ -11,6 +11,16 @@ import SettingsPage from './pages/dashboard/SettingsPage.jsx'
 import IntegrationHubPage from './pages/dashboard/IntegrationPage.jsx'
 import './index.css'
 
+import ManageStudentAccountsPage from "./pages/dashboard/ManageStudentAccountsPage.jsx"
+
+import StudentDashboardLayout from "./components/student/StudentDashboard.jsx"
+import StudentDashboardPage from "./pages/student/StudentDashboardPage.jsx"
+import CoursesPage from "./pages/student/CoursesPage.jsx"
+import AssignmentsPage from "./pages/student/AssignmentsPage.jsx"
+import GradesPage from "./pages/student/GradesPage.jsx"
+import ProfilePage from "./pages/student/ProfilePage.jsx"
+import StudentSettingsPage from "./pages/student/SettingsPage.jsx"
+
 function App() {
   return (
     <div className="App">
@@ -44,6 +54,72 @@ function App() {
             <DashboardLayout>
               <IntegrationHubPage />
             </DashboardLayout>
+          }
+        />
+        <Route
+          path="/dashboard/student-accounts"
+          element={
+            <DashboardLayout>
+              <ManageStudentAccountsPage />
+            </DashboardLayout>
+          }
+        />
+
+        {/* Student Dashboard Routes */}
+        <Route
+          path="/student"
+          element={
+            <StudentDashboardLayout>
+              <StudentDashboardPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/courses"
+          element={
+            <StudentDashboardLayout>
+              <CoursesPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/assignments"
+          element={
+            <StudentDashboardLayout>
+              <AssignmentsPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/schedule"
+          element={
+            <StudentDashboardLayout>
+              <SchedulePage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/grades"
+          element={
+            <StudentDashboardLayout>
+              <GradesPage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/profile"
+          element={
+            <StudentDashboardLayout>
+              <ProfilePage />
+            </StudentDashboardLayout>
+          }
+        />
+        <Route
+          path="/student/settings"
+          element={
+            <StudentDashboardLayout>
+              <StudentSettingsPage />
+            </StudentDashboardLayout>
           }
         />
       </Routes>

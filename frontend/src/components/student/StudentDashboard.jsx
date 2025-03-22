@@ -2,11 +2,26 @@
 
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { GraduationCap, LayoutDashboard, Users, BookOpen, Calendar, Settings, Bell, LogOut, Menu, X, ChevronDown, Search, Link2, Key } from 'lucide-react'
+import {
+  GraduationCap,
+  LayoutDashboard,
+  BookOpen,
+  FileText,
+  Calendar,
+  PieChart,
+  Settings,
+  Bell,
+  LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  Search,
+  User,
+} from "lucide-react"
 import { ThemeToggle } from "../ThemeToggle"
 import { cn } from "../../lib/utils"
 
-export default function DashboardLayout({ children }) {
+export default function StudentDashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
@@ -37,14 +52,15 @@ export default function DashboardLayout({ children }) {
     navigate("/")
   }
 
+  // Update the navigation array to include the profile page
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Students", href: "/dashboard/students", icon: Users },
-    { name: "Student Accounts", href: "/dashboard/student-accounts", icon: Key },
-    { name: "Classes", href: "/dashboard/classes", icon: BookOpen },
-    { name: "Schedule", href: "/dashboard/schedule", icon: Calendar },
-    { name: "Integrations", href: "/dashboard/integrations", icon: Link2 },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: "Dashboard", href: "/student", icon: LayoutDashboard },
+    { name: "Courses", href: "/student/courses", icon: BookOpen },
+    { name: "Assignments", href: "/student/assignments", icon: FileText },
+    { name: "Schedule", href: "/student/schedule", icon: Calendar },
+    { name: "Grades", href: "/student/grades", icon: PieChart },
+    { name: "Profile", href: "/student/profile", icon: User },
+    { name: "Settings", href: "/student/settings", icon: Settings },
   ]
 
   return (
@@ -105,11 +121,11 @@ export default function DashboardLayout({ children }) {
               <>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-primary font-medium">JD</span>
+                    <span className="text-primary font-medium">AS</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">John Doe</p>
-                    <p className="text-xs text-muted-foreground">Teacher</p>
+                    <p className="text-sm font-medium">Alex Smith</p>
+                    <p className="text-xs text-muted-foreground">Student</p>
                   </div>
                 </div>
                 <button onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
@@ -119,7 +135,7 @@ export default function DashboardLayout({ children }) {
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary font-medium">JD</span>
+                  <span className="text-primary font-medium">AS</span>
                 </div>
                 <button onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
                   <LogOut className="h-5 w-5" />
@@ -167,7 +183,7 @@ export default function DashboardLayout({ children }) {
             <button className="relative text-muted-foreground hover:text-foreground">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
-                3
+                2
               </span>
             </button>
 
@@ -178,7 +194,7 @@ export default function DashboardLayout({ children }) {
                 className="flex items-center gap-2 text-sm"
               >
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary font-medium">JD</span>
+                  <span className="text-primary font-medium">AS</span>
                 </div>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </button>
@@ -187,8 +203,8 @@ export default function DashboardLayout({ children }) {
                 <div className="absolute right-0 mt-2 w-48 rounded-md bg-card shadow-lg border">
                   <div className="py-1">
                     <div className="px-4 py-2 border-b">
-                      <p className="text-sm font-medium">John Doe</p>
-                      <p className="text-xs text-muted-foreground">john.doe@example.com</p>
+                      <p className="text-sm font-medium">Alex Smith</p>
+                      <p className="text-xs text-muted-foreground">alex.smith@example.com</p>
                     </div>
                     <a href="#" className="block px-4 py-2 text-sm hover:bg-muted">
                       Profile
@@ -212,3 +228,4 @@ export default function DashboardLayout({ children }) {
     </div>
   )
 }
+
