@@ -1,0 +1,968 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Page
+{% endblock %}
+{% block content %}
+{% load static %}
+
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center px-lg-5">
+    <div class="d-flex align-items-center justify-content-between ">
+      <a href="{% url 'facultyDashboard' %}" class="logo d-flex align-items-center">
+        <img src="" alt="">
+        <span class="d-lg-block">VirtualClassroom</span>
+      </a>
+      <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
+    </div><!-- End Logo -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{ userDetails.facultyPic.url }}" alt="Profile" class="rounded-circle" style="width:40px;">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{user.first_name}} {{user.last_name}}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{user.first_name}} {{user.last_name}}</h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyProfile'%}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+
+            {% if user.is_authenticated %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyLogout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% endif %}
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+
+  <main id="main" class="main px-lg-3 mx-lg-5" >
+
+    <div class="pagetitle px-xxl-5">
+      <h1>Classroom</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'facultyDashboard' %}">Home</a></li>
+          <li class="breadcrumb-item active">Classroom</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard px-xxl-5">
+
+    <div class="row d-flex">
+
+      <div class=" text-white col-lg-8 col-md-6  col-sm-12 h-100">
+        <div class="card info-card sales-card pb-0 h-100" style="">
+         <div class="row g-0" style="background: #4154f1; ">
+           <div class="col-md-3 align-self-center ">
+             <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" style="height: 6rem; width:6rem;">
+               <i class="bi bi-easel" style="font-size: 3rem; color: #4154f1"></i>
+             </div>
+           </div>
+           <div class="col-md-9 bg-white pb-lg-5" style="height:272px;">
+             <div class="card-body mt-lg-5 mb-0">
+               <h5 class="card-title mb-0 pt-2 pb-0" style=" font-size:25px; text-transform:uppercase;">{{class.classname | truncatechars:20}}</h5>
+               <h5 class="card-title mt-0 pt-1 py-1" ><b>CLASS CODE : </b>{{class.pk}}</h5>
+               <h5 class="card-title pt-0 py-1" style="text-transform: uppercase;"><b>DEPARTMENT : </b><br>{{class.classDepartment | truncatechars:50}}</h5>
+               <h5 class="card-title pt-0 py-1" style="text-transform: uppercase;"><b>ACADEMIC YEAR : </b>{{class.academicYear | truncatechars:15}}</h5>
+               <!-- <h1  style="color:red; text-transform: uppercase;">{{class.classname}}</h1>
+               <p class="" style="color:black;">{{class.classDepartment}}</p>
+               <p class="" style="color:black;">Class Code : <strong>{{class.classId}}</strong></p> -->
+             </div>
+           </div>
+         </div>
+       </div>
+      </div>
+
+        <!-- Time Table Details -->
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div class="card mb-3 info-card sales-card pb-0">
+           <div class="row g-0" style="background: #4154f1">
+             <div class="col-sm-4 align-self-center ">
+               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                 <i class="bi bi-calendar-check" style="color: #4154f1"></i>
+               </div>
+             </div>
+             <div class="col-sm-8 bg-white">
+               <div class="card-body mt-0  pb-0">
+                 <h5 class="card-title text-center my-0 pt-3 ">TIME TABLE &nbsp;<i type="button" class="bi bi-pen" data-bs-toggle="modal" data-bs-target="#timeTableModal"></i></h5>
+                 <div class="activity">
+                   <div class="mx-auto mt-0 ">
+                       <table class="table table-borderless ">
+                       <tbody>
+                           <tr >
+                             <td class="py-1" style="color: #012970"><strong>MONDAY</strong></td>
+                             {% if 'Monday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Monday' }} - {{ timeTable|get_end_time:'Monday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+                           <tr >
+                             <td class="py-1" style="color: #012970"><strong>TUESDAY</strong></td>
+                             {% if 'Tuesday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Tuesday' }} - {{ timeTable|get_end_time:'Tuesday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+
+                           <tr >
+                             <td class="py-1" style="color: #012970"><strong>WEDNESDAY</strong></td>
+                             {% if 'Wednesday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Wednesday' }} - {{ timeTable|get_end_time:'Wednesday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+
+                           <tr >
+                             <td class="py-1" style="color: #012970"><strong>THURSDAY</strong></td>
+                             {% if 'Thursday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Thursday' }} - {{ timeTable|get_end_time:'Thursday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+                           <tr >
+                             <td class="py-1" style="color: #012970"><strong>FRIDAY</strong></td>
+                             {% if 'Friday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Friday' }} - {{ timeTable|get_end_time:'Friday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+
+                           <tr>
+                             <td class="py-1" style="color:#012970"><strong>SATURDAY</strong></td>
+                             {% if 'Saturday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Saturday' }} - {{ timeTable|get_end_time:'Saturday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+                           <tr>
+                             <td class="py-1" style="color:#012970"><strong>SUNDAY </strong></td>
+                             {% if 'Sunday' in timeTable %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; {{ timeTable|get_start_time:'Sunday' }} - {{ timeTable|get_end_time:'Sunday' }}</strong></td>
+                             {% else %}
+                              <td class="py-1" style="color: #012970"><strong>: &nbsp; ---</strong></td>
+                             {% endif %}
+                           </tr>
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+
+                 <!-- Modal for Meet Link -->
+                 <form class="needs-validation" method='POST' novalidate  >
+                   {% csrf_token %}
+                   <div class="modal fade" id="timeTableModal" tabindex="-1">
+                     <div class="modal-dialog modal-dialog-centered">
+                       <div class="modal-content">
+                         <div class="modal-header">
+                           <h5 class="modal-title">Update Time Table (Time in 24hr Format)</h5>
+                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                         </div>
+                         <div class="modal-body">
+                           <div class="col-md-12">
+                             <div class="form-floating">
+                               <!-- Monday -->
+                               <div class="container px-2">
+
+
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="monday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('monday_start');
+                                                  var input2 = document.getElementById('monday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Monday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="monday" style="font-size:20px;">Monday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="monday_start" class="form-control" id="monday_start" value=0 disabled>
+                                       <label for="monday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="monday_end" class="form-control" id="monday_end" value=0 disabled>
+                                       <label for="monday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div><!-- Ends Monday -->
+
+
+                               <!-- Tuesday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="tuesday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('tuesday_start');
+                                                  var input2 = document.getElementById('tuesday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Tuesday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="tuesday" style="font-size:20px;">Tuesday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="tuesday_start" class="form-control" id="tuesday_start" value=0 disabled>
+                                       <label for="tuesday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="tuesday_end" class="form-control" id="tuesday_end" value=0 disabled>
+                                       <label for="tuesday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div><!-- Ends Tuesday -->
+
+
+                               <!-- Wednesday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="wednesday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('wednesday_start');
+                                                  var input2 = document.getElementById('wednesday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Wednesday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="acceptTerms" style="font-size:20px;">Wednesday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="wednesday_start" class="form-control" id="wednesday_start" value=0 disabled>
+                                       <label for="wednesday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="wednesday_end" class="form-control" id="wednesday_end" value=0 disabled>
+                                       <label for="wednesday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div> <!-- Ends Wednesday -->
+
+                               <!-- Thursday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="thursday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('thursday_start');
+                                                  var input2 = document.getElementById('thursday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Thursday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="acceptTerms" style="font-size:20px;">Thursday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="thursday_start" class="form-control" id="thursday_start" value=0 disabled>
+                                       <label for="thursday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="thursday_end" class="form-control" id="thursday_end" value=0 disabled>
+                                       <label for="thursday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div> <!-- Ends Thursday -->
+
+                               <!-- Friday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="friday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('friday_start');
+                                                  var input2 = document.getElementById('friday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Friday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="acceptTerms" style="font-size:20px;">Friday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="friday_start" class="form-control" id="friday_start"  value=0 disabled>
+                                       <label for="friday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="friday_end" class="form-control" id="friday_end"  value=0 disabled>
+                                       <label for="friday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div> <!-- Ends Friday -->
+
+                               <!-- Saturday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="saturday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('saturday_start');
+                                                  var input2 = document.getElementById('saturday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Saturday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="acceptTerms" style="font-size:20px;">Saturday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="saturday_start" class="form-control" id="saturday_start" value=0 disabled>
+                                       <label for="saturday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="saturday_end" class="form-control" id="saturday_end" value=0 disabled>
+                                       <label for="saturday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div> <!-- Ends Saturday -->
+
+                               <!-- Sunday -->
+                               <div class="row my-2">
+                                 <div class="col-lg-4 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-check mt-2 ">
+                                       <input class="form-check-input" id="sunday" type="checkbox" name="time"
+                                         onclick="var input1 = document.getElementById('sunday_start');
+                                                  var input2 = document.getElementById('sunday_end');
+                                                  if(this.checked){ input1.disabled = false; input2.disabled = false; input.focus();}
+                                                  else{input1.disabled=true; input2.disabled = true;}" value="Sunday" style="font-size:25px;" />
+                                       <label class="form-check-label" for="acceptTerms" style="font-size:20px;">Sunday</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="number" min=0 max=24 name="sunday_start" class="form-control" id="sunday_start" value=0 disabled>
+                                       <label for="sunday_start">From</label>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div class="col-lg-3 mx-auto">
+                                   <div class="col-md-12">
+                                     <div class="form-floating">
+                                       <input type="text" name="sunday_end" class="form-control" id="sunday_end" value=0 disabled>
+                                       <label for="sunday_end">To</label>
+                                     </div>
+                                   </div>
+                                 </div>
+                               </div> <!-- Ends Sunday -->
+                               </div>
+
+                             </div>
+                           </div>
+                         </div>
+                         <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                           <button type="submit" name="timeSubmit" class="btn btn-primary">Save changes</button>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </form><!-- End Modal-->
+
+
+               </div>
+             </div>
+           </div>
+         </div>
+        </div><!-- End Time Table Details -->
+
+    </div>
+
+
+
+      <div class="row">
+
+       <div class="col-xxl-3 col-xl-3 col-md-4 col-sm-6">
+         <a href="#" data-bs-toggle="modal" data-bs-target="#announcementModal">
+           <div class="card info-card sales-card pb-0">
+            <div class="row g-0" style="background: #4154f1">
+              <div class="col-md-4 align-self-center ">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                  <i class="bi bi-chat-right-text" style=""></i>
+                </div>
+              </div>
+              <div class="col-md-8 bg-white">
+                <div class="card-body mt-2 mb-0">
+                  <h5 class="card-title text-center ">POST <br>ANNOUNCEMENT</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+         </a>
+
+         <!-- Modal for Announcement -->
+         <form class="" method="POST">
+           {% csrf_token %}
+           <div class="modal fade" id="announcementModal" tabindex="-1">
+             <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                 <div class="modal-header">
+                   <h5 class="modal-title">Post Announcement</h5>
+                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                 </div>
+                 <div class="modal-body">
+
+                  <div class="col-12">
+                    <label for="inputNanme4" class="form-label">Heading*</label>
+                    <input type="text" class="form-control" name="announcementHeading" id="announcementHeading" required>
+                    <div class="invalid-feedback">Please, enter the Announcement Heading!</div>
+                  </div>
+                  <br>
+
+                  <div class="col-12">
+                    <label for="announcementDescription" class="form-label">Description*</label>
+                    <textarea type="text" class="form-control" name="announcementDescription" rows="8" cols="80" required></textarea>
+                    <div class="invalid-feedback">Please, enter the Announcement Description!</div>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="submit" name="postAnnouncement" class="btn btn-primary">Post</button>
+               </div>
+             </div>
+           </div>
+         </div>
+       </form><!-- End Announcement Modal-->
+       </div>
+
+
+
+
+        <div class="col-xxl-3 col-xl-3 col-md-4 col-sm-6">
+
+          <a href="#" data-bs-toggle="modal" data-bs-target="#assignmentModal">
+            <div class="card info-card sales-card pb-0">
+             <div class="row g-0" style="background: #4154f1">
+               <div class="col-md-4 align-self-center ">
+                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                   <i class="bi bi-pencil-square" style=""></i>
+                 </div>
+               </div>
+               <div class="col-md-8 bg-white">
+                 <div class="card-body my-1  mt-2 mb-0">
+                   <h5 class="card-title text-center ">POST <br>ASSIGNMENT</h5>
+                 </div>
+               </div>
+             </div>
+           </div>
+          </a>
+
+
+          <!-- Modal for Assignment -->
+          <form class="needs-validation" method="POST" novalidate>
+            {% csrf_token %}
+            <div class="modal fade" id="assignmentModal" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Post Assignment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                   <div class="col-12">
+                     <label for="inputNanme4" class="form-label">Heading*</label>
+                     <input type="text" class="form-control" name="assignmentHeading" id="assignmentHeading" required>
+                     <div class="invalid-feedback">Please, enter the Assignment Heading!</div>
+                   </div>
+                   <br>
+
+                   <div class="col-12">
+                     <label for="assignmentDescription" class="form-label">Description*</label>
+                     <textarea type="text" class="form-control" name="assignmentDescription" rows="2" cols="80" required></textarea>
+                     <div class="invalid-feedback">Please, enter the Assignment Description!</div>
+                   </div>
+                   <br>
+                   <div class="col-12">
+                     <label for="inputNanme4" class="form-label">Assignment Link(Eg. Google Form/Google Drive Link)</label>
+                     <input type="url" class="form-control" name="assignmentLink" id="assignmentLink">
+                     <div class="invalid-feedback">Please, enter valid URL!</div>
+                   </div>
+                   <br>
+
+                   <div class="col-12">
+
+                     <label for="inputNanme4" class="form-label">Due Date and Time*</label>
+                     <input type="datetime-local" class="form-control" name="dueDate" id="dueDate" required>
+                     <div class="invalid-feedback">Please, enter the Due Date and Time</div>
+                   </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" name="postAssignment" class="btn btn-primary">Post</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form><!-- End Assignment Modal-->
+
+        </div>
+
+
+        <div class="col-xxl-3 col-xl-3 col-md-4 col-sm-6">
+          <a href="{% url 'classAttendence' class.pk %}">
+            <div class="card info-card sales-card pb-0">
+             <div class="row g-0" style="background: #4154f1">
+               <div class="col-md-4 align-self-center ">
+                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                   <i class="bi bi-clipboard-data" style=""></i>
+                 </div>
+               </div>
+               <div class="col-md-8 bg-white">
+                 <div class="card-body my-1  mt-2 mb-0">
+                   <h5 class="card-title text-center ">TAKE <br>ATTENDENCE</h5>
+                 </div>
+               </div>
+             </div>
+           </div>
+          </a>
+        </div>
+
+        <div class="col-xxl-3 col-xl-3 col-md-4 col-sm-6">
+
+          <a href="{% url 'classMembersList' class.pk%}">
+            <div class="card info-card sales-card pb-0">
+             <div class="row g-0" style="background: #4154f1">
+               <div class="col-md-4 align-self-center ">
+                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                   <i class="bi bi-people" style=""></i>
+                 </div>
+               </div>
+               <div class="col-md-8 bg-white">
+                 <div class="card-body my-1  mt-2 mb-0">
+                   <h5 class="card-title text-center ">CHECK <br>MEMBERS</h5>
+                 </div>
+               </div>
+             </div>
+           </div>
+          </a>
+        </div>
+
+
+
+      </div>
+
+
+
+      <div class="row">
+
+        <!-- Right side columns -->
+        <div class="col-lg-3">
+
+          <!-- Meeting Details -->
+          <div class="card mb-3 info-card sales-card pb-0">
+           <div class="row g-0" style="background: #4154f1">
+             <div class="col-md-4 align-self-center ">
+               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                 <i class="bi bi-camera-video" style=""></i>
+               </div>
+             </div>
+             <div class="col-md-8 bg-white">
+               <div class="card-body my-1">
+                 <h5 class="card-title text-center">MEET LINK <i type="button" class="bi bi-pen" data-bs-toggle="modal" data-bs-target="#gmeetModal"></i></h5>
+                 <div class="activity text-center">
+                   {% if class.classLink %}
+                     <a type="button" href="{{class.classLink}}"  class="btn btn-primary col-sm-12" style="background: #4154f1" name="button">JOIN NOW</a>
+                   {% else %}
+                     <button type="button" class="btn btn-primary col-sm-8" style="background: #4154f1" name="button" disabled>JOIN NOW</button>
+                   {% endif %}
+
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div><!-- End Meeting Details -->
+
+
+          <!-- Modal for Meet Link -->
+          <form class="needs-validation" method='POST' novalidate  >
+            {% csrf_token %}
+            <div class="modal fade" id="gmeetModal" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Enter the Meeting Link</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="col-md-12">
+                      <div class="form-floating">
+                        <input type="url" name="meetLink" class="form-control" id="floatingName" placeholder="Enter the Link" required>
+                        <label for="floatingName">Meeting Link</label>
+                        <div class="invalid-feedback">Please enter Valid Link</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="linkSubmit" class="btn btn-primary">Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form><!-- End Modal-->
+
+            <!-- Meeting Details -->
+
+
+          <div class="">
+
+            <a href="#" data-bs-toggle="modal" data-bs-target="#sendInvitesModal">
+              <div class="card info-card sales-card pb-0">
+               <div class="row g-0" style="background: #4154f1">
+                 <div class="col-md-4 align-self-center ">
+                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                     <i class="bi bi-cursor" style=""></i>
+                   </div>
+                 </div>
+                 <div class="col-md-8 bg-white">
+                   <div class="card-body my-1  mt-2 mb-0">
+                     <h5 class="card-title text-center ">SEND <br>INVITES</h5>
+                   </div>
+                 </div>
+               </div>
+             </div>
+            </a>
+
+            <!-- Modal for Invites -->
+            <form class="needs-validation" method="POST" novalidate>
+              {% csrf_token %}
+              <div class="modal fade" id="sendInvitesModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Send Invites To Join</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                     <div class="col-12">
+                       <label for="inputNanme4" class="form-label">Enter the Student ID</label>
+                       <input type="text" class="form-control" name="studentId" id="studentId" required>
+                       <div class="invalid-feedback">Please Ennter the Student ID</div>
+                     </div>
+                     <br>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" name="sendInvite" class="btn btn-primary">Send</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form><!-- End Invites Modal-->
+
+        </div>
+
+
+          <div class="card mb-3 info-card sales-card pb-0">
+           <div class="row g-0" style="background: #4154f1">
+             <div class="col-md-4 align-self-center ">
+               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto">
+                 <i class="bi bi-columns-gap" style=""></i>
+               </div>
+             </div>
+             <div class="col-md-8 bg-white">
+               <div class="card-body my-1">
+                 <h5 class="card-title text-center mb-0">OFFLINE MODE ?</h5>
+                 <div class="activity ">
+                   {% if classOfflineStatus.offlineStatus == 'NO' %}
+                      <p><strong>STATUS : NO</strong></p>
+                      <a type="button" class="btn btn-primary col-sm-12 bg-danger" style="border:red;" data-bs-toggle="modal" data-bs-target="#enableOffline">CHANGE STATUS</a>
+                   {% else %}
+                      <p class="my-1"><strong>STATUS : YES</strong></p>
+                      <p class="my-1"><strong>Vaccine Dose : {{classOfflineStatus.vaccineRequired}}</strong></p>
+                      <p class="my-1"><strong>Strength % : {{classOfflineStatus.classStrength}}</strong></p>
+                      <br>
+                      <a href="{% url 'offlineOptedList' class.pk %}" class="btn btn-primary col-sm-12 my- 2 bg-warning" style="border:red;">OPTED STUDENTS</a>
+                      <a type="button" class="btn btn-primary col-sm-12 bg-success my-2" style="border:green;" data-bs-toggle="modal" data-bs-target="#disableOffline">CHANGE STATUS</a>
+                   {% endif %}
+
+                 </div>
+               </div>
+             </div>
+           </div>
+
+
+           <!-- Modal for Meet Link -->
+           <form class="needs-validation" method='POST' novalidate  >
+             {% csrf_token %}
+             <div class="modal fade" id="enableOffline" tabindex="-1">
+               <div class="modal-dialog modal-dialog-centered">
+                 <div class="modal-content">
+                   <div class="modal-header">
+                     <h5 class="modal-title">Offline Mode Requirements</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                   </div>
+                   <div class="modal-body">
+                     <div class="col-md-11 my-2 mx-auto">
+                       <div class="form-floating">
+                         <select class="form-control" name="vaccine" required>
+                           <option value="0">0</option>
+                           <option value="1">1</option>
+                           <option value="2">2</option>
+                         </select>
+                         <label for="floatingName">Vaccine Dose Required</label>
+                         <div class="invalid-feedback">Please enter the required vaccine dose</div>
+                       </div>
+                     </div>
+
+                     <div class="col-md-11 my-3 mx-auto">
+                       <div class="form-floating">
+                         <input type="number" name="strength" class="form-control" min="0" max="100" required>
+                         <label for="floatingName">Class Strength Allowed (in %)</label>
+                         <div class="invalid-feedback">Please enter valid class strength (0 - 100)</div>
+                       </div>
+                     </div>
+
+                   </div>
+                   <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                     <button type="submit" name="enableOffline" class="btn btn-primary">Save changes</button>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </form><!-- End Modal-->
+
+           <!-- Modal for Meet Link -->
+           <form class="needs-validation" method='POST' novalidate  >
+             {% csrf_token %}
+             <div class="modal fade" id="disableOffline" tabindex="-1">
+               <div class="modal-dialog modal-dialog-centered">
+                 <div class="modal-content">
+                   <div class="modal-header">
+                     <h5 class="modal-title">Offline Mode Requirements</h5>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                   </div>
+                   <div class="modal-body">
+                     <h4 class="card-title">Are you Sure want to change the Status ?</h4>
+                   </div>
+                   <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">NO</button>
+                     <button type="submit" name="disableOffline" class="btn btn-primary">YES</button>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </form><!-- End Modal-->
+
+         </div><!-- End Meeting Details -->
+
+        </div><!-- End Right side columns -->
+
+
+
+
+        <!-- Announcement and Assignment -->
+        <div class="col-lg-9 px-lg-5">
+          <div class="row">
+            <div class="container ">
+
+              {% include 'partials/_alert.html' %}
+
+
+                {% if all_items_feed%}
+                  {% for item in all_items_feed %}
+                      {% if item.type == 'announcement' %}
+
+                      <!-- Meeting Details -->
+                    <div class="">
+                      <div class="card info-card sales-card pb-0">
+                       <div class="row g-0" style="background: #355C7D">
+                         <div class="col-sm-2 align-self-center ">
+                           <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto bg-white">
+                             <i class="bi bi-chat-right-text " style="color:#355C7D"></i>
+                           </div>
+                         </div>
+                         <div class="col-sm-10 bg-white" >
+                           <div class="card-body">
+                             <div class="">
+                               <div class="">
+                                 <h5 class="card-title">{{item.announcementHeading}}</h5>
+                               </div>
+                             </div>
+                             {{item.announcementDescription}}
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                     </div><!-- End Meeting Details -->
+
+                      {% elif item.type == 'assignment' %}
+
+                      <div class="">
+                         <div class="card info-card sales-card  pb-0">
+                           <div class="row g-0" style="background: #99B898" >
+                             <div class="col-sm-2 align-self-center"  >
+                               <div class="card-icon rounded-circle d-flex align-items-center justify-content-center mx-auto" style="">
+                                 <i class="bi bi-pencil-square " style="color: #99B898"></i>
+                               </div>
+                             </div>
+                             <div class="col-sm-10 bg-white">
+                               <div class="card-body">
+                                 <div class="d-flex justify-content-between">
+                                   <div class="col-sm-9">
+                                     <h5 class="card-title">{{item.assignmentHeading}}</h5>
+                                   </div>
+                                   <div class="col-sm-3">
+                                     <h5 class="card-title">Due: {{item.assignmentDueTime |date:"M d, Y" }}</h5>
+                                   </div>
+                                 </div>
+
+                                 <p>{{item.assignmentDescription}}</p>
+                                 {% if item.assignmentLink %}
+                                 <div class="d-flex justify-content-between">
+                                   <p><strong>Assignment Link : <a href="{{item.assignmentLink}}" target="_blank">Click Here</a></strong></p>
+                                   <div class="" style="text-align:right;">
+                                     <a class="btn  btn-sm" href="{% url 'assignmentSubmissions' item.pk %}" name="button" style="background:#4154f1; color:white;">View Submissions</a>
+                                   </div>
+                                 </div>
+                                 {% else %}
+                                 <div class="" style="text-align:right;">
+                                   <a class="btn  btn-sm" href="{% url 'assignmentSubmissions' item.pk %}" name="button" style="background:#4154f1; color:white;">View Submissions</a>
+                                 </div>
+                                 {% endif %}
+
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                      </div>
+
+
+                      {% endif %}
+                {% endfor %}
+
+              {% else %}
+                <div class="">
+                   <div class="card">
+                     <div class="card-body py-4 text-center">
+                       <h3>Nothing To Display For Now!!</h3>
+                     </div>
+                   </div>
+                </div>
+              {% endif %}
+
+            </div>
+          </div>
+        </div><!-- End Announcement and Assignment -->
+
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/_footer.html'%}
+  <!-- ======= Footer Ends ======= -->
+
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+{% endblock %}

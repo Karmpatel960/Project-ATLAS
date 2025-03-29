@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Page
+{% endblock %}
+{% block content %}
+{% load static %}
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center px-lg-5">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'facultyDashboard'%}" class="logo d-flex align-items-center">
+        <img src="" alt="">
+        <span class="d-lg-block">VirtualClassroom</span>
+      </a>
+      <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
+    </div><!-- End Logo -->
+
+
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{ faculty.facultyPic.url }}" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{user.first_name}} {{user.last_name}}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{user.first_name}} {{user.last_name}}</h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyProfile' %}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+
+            {% if user.is_authenticated %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyLogout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% endif %}
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+
+
+  <main id="main" class="main px-lg-5 mx-lg-5">
+
+    <div class="pagetitle">
+      <h1>Class Create</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'facultyDashboard' %}">Home</a></li>
+          <li class="breadcrumb-item active">Class Create</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <style media="screen">
+      .gradient-custom-2 {
+      background-image: linear-gradient(to left bottom, #1b1e7b, #1f2685, #222f90, #26379a, #2940a5, #2940a5, #2940a5, #2940a5, #26379a, #222f90, #1f2685, #1b1e7b);
+    }
+    </style>
+    <div class="container">
+      <section class="h-100 gradient-form">
+          <div class="container py-2 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+              <div class="col-xl-10">
+                <div class="card  text-black" style="border-radius:30px; ">
+                  <div class="row g-0">
+
+                    <div class="col-lg-6 d-flex align-items-center gradient-custom-2 .gradient-custom-2 ">
+                      <div class="text-white px-3 py-4 mx-md-4">
+                        <div class="image-container m-0">
+                        <img src="{% static 'images/classroom.png'%}" class="img-fluid" alt="" >
+                        </div>
+
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div class="card-body px-md-5 py-md-3 mx-md-4">
+                        {% include 'partials/_alert.html' %}
+                        <div class="text-center mb-4">
+                          <h5 class="card-title text-center pb-0 mb-1 fs-4">CREATE CLASSROOM</h5>
+                          <p class="text-center small ">( Enter the details to create Classroom )</p>
+                        </div>
+
+                        <form class="row g-3 needs-validation"   method='POST' novalidate>
+                          {% csrf_token %}
+
+                          <div class="col-12 ">
+                            <label for="className" class="form-label">CLASSROOM NAME*</label>
+                            <input type="text" name="className" class="form-control" id="className" required>
+                            <div class="invalid-feedback">Please enter Classroom Name!</div>
+                          </div>
+
+                         <div class="my-0">
+                           <input type="text" name="faculty" class="form-control" id="faculty" value="{{user.first_name}} {{user.last_name}}" hidden required>
+                         </div>
+
+
+                          <div class="col-12">
+                            <label for="department" class="form-label">DEPARTMENT*</label>
+                            <input type="text" name="department" class="form-control" id="department" required>
+                            <div class="invalid-feedback">Please enter Department!</div>
+                          </div>
+
+                          <div class="col-12">
+                            <label for="year" class="form-label">ACADEMIC YEAR*</label>
+                            <input type="number" min="2000" max="2050" name="year" class="form-control" id="year" required>
+                            <div class="invalid-feedback">Please enter Academic Year (Between 2000-2050)</div>
+                          </div>
+
+                          <div class="col-12">
+                            <label for="gmeet" class="form-label">MEET LINK</label>
+                            <input type="url" name="gmeet" class="form-control" id="gmeet" >
+                            <div class="invalid-feedback">Please enter Valid Meeting Link!</div>
+                          </div>
+
+                          <div class="col-12 my-4">
+                            <button class="btn btn-primary w-100" name="submit" type="submit" style="background-image: linear-gradient(to left bottom, #1b1e7b, #1f2685, #222f90, #26379a, #2940a5, #2940a5, #2940a5, #2940a5, #26379a, #222f90, #1f2685, #1b1e7b); border-color:blue;"><strong>CREATE CLASS</strong></button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+    </div>
+
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/_footer.html'%}
+  <!-- ======= Footer Ends ======= -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+
+
+  {% endblock %}
