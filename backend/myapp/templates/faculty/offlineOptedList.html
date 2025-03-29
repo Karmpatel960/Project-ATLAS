@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Page
+{% endblock %}
+{% block content %}
+
+<style media="screen">
+
+</style>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center px-lg-5">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="{% url 'facultyDashboard' %}" class="logo d-flex align-items-center">
+        <img src="" alt="">
+        <span class="d-lg-block">VirtualClassroom</span>
+      </a>
+    </div><!-- End Logo -->
+
+
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{{userDetails.facultyPic.url}}" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{user.first_name}} {{user.last_name}}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{user.first_name}} {{user.last_name}}</h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyProfile' %}">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            {% if user.is_authenticated %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'facultyLogout' %}">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+            {% endif %}
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  <main id="main" class="main px-lg-5 mx-lg-5">
+
+    <div class="pagetitle">
+      <h1>Offline Class List</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'facultyDashboard' %}">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'facultySubject' id %}">Classroom</a></li>
+          <li class="breadcrumb-item active">Offline Mode Details</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section profile">
+
+
+      <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center">OFFLINE MODE DETAILS</h5>
+
+              <!-- Table with stripped rows -->
+              <div class="my-3">
+
+                <h5>Class Strength : <strong style="color:green;">{{students|length}}</strong></h5>
+                <h5>Students Opted for Offline Mode: <strong style="color:green;">{{offlineList|length}}</strong></h5>
+
+              </div>
+
+              <table class="table datatable table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Student ID</th>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Offline Mode</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in students %}
+                  <tr>
+                    <th scope="row">{{ forloop.counter}}</th>
+                    <td>{{user.username}}</td>
+                    <td>{{user.first_name}} {{user.last_name}}</td>
+                    <td>{{user.email}}</td>
+                    {% if user.username in offlineList %}
+                      <td style="color:green;"><strong>YES</strong></td>
+                    {% else %}
+                      <td style="color:red;"><strong>NO</strong></td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+
+
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+    </section>
+
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  {% include 'partials/_footer.html'%}
+  <!-- ======= Footer Ends ======= -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+  {% endblock %}
