@@ -2,63 +2,110 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
+import { login, signup, googleLogin } from "../api/loginCalls"
 import { Button } from "../components/ui/Button"
 import { GraduationCap, Mail, Lock, User, ArrowRight, EyeOff, Eye } from "lucide-react"
+import { useToast } from "../components/ui/ToastContext"
+import { FullPageLoader } from "../components/ui/Loader"
 
 export default function AuthPage() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { addToast } = useToast()
+
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
   const [role, setRole] = useState("admin")
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" })
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Check if we should show login or signup based on the URL
+  // Determine if the current page is login or signup based on the URL
   useEffect(() => {
-    if (location.pathname === "/signup") {
-      setIsLogin(false)
-    } else {
-      setIsLogin(true)
-    }
+    setIsLogin(location.pathname !== "/signup")
   }, [location.pathname])
 
   const toggleAuthMode = () => {
-    if (isLogin) {
-      navigate("/signup")
-    } else {
-      navigate("/login")
+    navigate(isLogin ? "/signup" : "/login")
+  }
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    // Form validation
+    if (!formData.email || !formData.password) {
+      addToast("Please fill in all required fields", "error")
+      return
+    }
+
+    if (!isLogin && !formData.name) {
+      addToast("Please enter your name", "error")
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      if (isLogin) {
+        const data = await login(formData.email, formData.password, role)
+        console.log("Login successful:", data)
+        addToast(`Welcome back! You've successfully logged in.`, "success")
+
+        // Redirect after a short delay to allow the toast to be seen
+        setTimeout(() => {
+          navigate(role === "admin" ? "/dashboard" : "/student")
+        }, 1000)
+      } else {
+        const data = await signup(formData.name, formData.email, formData.password, role)
+        console.log("Signup successful:", data)
+        addToast(`Account created successfully! Welcome to ATLAS.`, "success")
+
+        // Redirect after a short delay to allow the toast to be seen
+        setTimeout(() => {
+          navigate(role === "admin" ? "/dashboard" : "/student")
+        }, 1000)
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        (isLogin ? "Login failed. Please check your credentials." : "Signup failed. Please try again.")
+      addToast(errorMessage, "error")
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleForgotPassword = (e) => {
-    e.preventDefault()
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+
+    try {
+      const data = await googleLogin(role)
+      console.log("Google login successful:", data)
+      addToast(`Welcome! You've successfully logged in with Google.`, "success")
+
+      // Redirect after a short delay to allow the toast to be seen
+      setTimeout(() => {
+        navigate(role === "admin" ? "/dashboard" : "/student")
+      }, 1000)
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Google authentication failed. Please try again."
+      addToast(errorMessage, "error")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleForgotPassword = () => {
     navigate("/forgot-password")
-  }
-
-  const handleGoogleLogin = () => {
-    // Implement Google login logic here
-    console.log("Google login clicked with role:", role)
-    // After successful login, redirect to appropriate dashboard
-    if (role === "admin") {
-      navigate("/dashboard")
-    } else {
-      navigate("/student")
-    }
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Implement login/signup logic here
-    console.log("Form submitted with role:", role)
-    // After successful login/signup, redirect to appropriate dashboard
-    if (role === "admin") {
-      navigate("/dashboard")
-    } else {
-      navigate("/student")
-    }
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      {isLoading && <FullPageLoader />}
+
       <header className="w-full py-4 px-4 md:px-6 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2">
           <GraduationCap className="h-8 w-8 text-primary" />
@@ -110,6 +157,7 @@ export default function AuthPage() {
               variant="outline"
               className="w-full mb-6 flex items-center justify-center gap-2 h-12"
               onClick={handleGoogleLogin}
+              disabled={isLoading}
             >
               <svg viewBox="0 0 24 24" width="24" height="24" className="h-5 w-5">
                 <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -156,9 +204,13 @@ export default function AuthPage() {
                     <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                     <input
                       id="name"
+                      name="name"
                       type="text"
+                      value={formData.name}
+                      onChange={handleInputChange}
                       className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       placeholder="John Doe"
+                      disabled={isLoading}
                     />
                   </div>
                 </div>
@@ -175,9 +227,13 @@ export default function AuthPage() {
                   <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                   <input
                     id="email"
+                    name="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="m@example.com"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -204,21 +260,26 @@ export default function AuthPage() {
                   <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                   <input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleInputChange}
                     className="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-10 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="••••••••"
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full h-11">
+              <Button type="submit" className="w-full h-11" disabled={isLoading}>
                 {isLogin ? "Sign In" : "Create Account"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -226,7 +287,11 @@ export default function AuthPage() {
 
             <div className="mt-6 text-center text-sm">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button onClick={toggleAuthMode} className="font-medium text-primary hover:underline">
+              <button
+                onClick={toggleAuthMode}
+                className="font-medium text-primary hover:underline"
+                disabled={isLoading}
+              >
                 {isLogin ? "Sign up" : "Sign in"}
               </button>
             </div>

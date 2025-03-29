@@ -1,58 +1,86 @@
-import { useState } from 'react'
-import { Search, Plus, Filter, MoreHorizontal, Mail, Download, Trash2, X, Check } from 'lucide-react'
-import { Button } from '../../components/ui/Button'
+"use client"
+
+import { useState, useEffect } from "react"
+import { Search, Plus, Filter, MoreHorizontal, X, Check } from "lucide-react"
+import { Button } from "../../components/ui/Button"
+import { useToast } from "../../components/ui/ToastContext"
+import { Loader } from "../../components/ui/Loader"
+import { getAllStudents, addStudent } from "../../api/student"
 
 export default function StudentsPage() {
+  const { addToast } = useToast()
   const [isAddingStudent, setIsAddingStudent] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [students, setStudents] = useState([])
   const [newStudent, setNewStudent] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    grade: '',
-    status: 'active'
+    firstName: "",
+    lastName: "",
+    email: "",
+    grade: "",
+    status: "active",
   })
-  const [students, setStudents] = useState([
-    { id: 1, name: 'Emma Thompson', email: 'emma.t@example.com', grade: '10th', status: 'active', lastActive: '2 hours ago' },
-    { id: 2, name: 'James Wilson', email: 'james.w@example.com', grade: '11th', status: 'active', lastActive: '1 day ago' },
-    { id: 3, name: 'Olivia Martinez', email: 'olivia.m@example.com', grade: '9th', status: 'inactive', lastActive: '5 days ago' },
-    { id: 4, name: 'William Johnson', email: 'william.j@example.com', grade: '12th', status: 'active', lastActive: '3 hours ago' },
-    { id: 5, name: 'Sophia Brown', email: 'sophia.b@example.com', grade: '10th', status: 'active', lastActive: '1 hour ago' },
-    { id: 6, name: 'Benjamin Davis', email: 'benjamin.d@example.com', grade: '11th', status: 'inactive', lastActive: '1 week ago' },
-    { id: 7, name: 'Mia Rodriguez', email: 'mia.r@example.com', grade: '9th', status: 'active', lastActive: '4 hours ago' },
-    { id: 8, name: 'Ethan Smith', email: 'ethan.s@example.com', grade: '12th', status: 'active', lastActive: '2 days ago' }
-  ])
 
-  const handleAddStudent = () => {
-    if (!newStudent.firstName || !newStudent.lastName || !newStudent.email) {
-      return // Validation would go here
+  useEffect(() => {
+    const fetchStudents = async () => {
+      setIsLoading(true)
+      try {
+        const response = await getAllStudents(searchQuery, { status: statusFilter !== "all" ? statusFilter : "" })
+        setStudents(response.students || [])
+      } catch (error) {
+        console.error("Error fetching students:", error)
+        addToast("Failed to load students. Please try again.", "error")
+      } finally {
+        setIsLoading(false)
+      }
     }
-    
-    const newStudentObj = {
-      id: students.length + 1,
-      name: `${newStudent.firstName} ${newStudent.lastName}`,
-      email: newStudent.email,
-      grade: newStudent.grade,
-      status: newStudent.status,
-      lastActive: 'Just now'
-    }
-    
-    setStudents([...students, newStudentObj])
-    setNewStudent({
-      firstName: '',
-      lastName: '',
-      email: '',
-      grade: '',
-      status: 'active'
-    })
-    setIsAddingStudent(false)
-  }
+
+    fetchStudents()
+  }, [searchQuery, statusFilter, addToast])
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setNewStudent({
       ...newStudent,
-      [name]: value
+      [name]: type === "checkbox" ? checked : value,
     })
+  }
+
+  const handleAddStudent = async () => {
+    if (!newStudent.firstName || !newStudent.lastName || !newStudent.email) {
+      addToast("Please fill in all required fields", "error")
+      return
+    }
+
+    try {
+      const studentData = {
+        name: `${newStudent.firstName} ${newStudent.lastName}`,
+        email: newStudent.email,
+        grade: newStudent.grade,
+        status: newStudent.status,
+      }
+
+      const response = await addStudent(studentData)
+
+      setStudents([...students, response.student])
+      setNewStudent({
+        firstName: "",
+        lastName: "",
+        email: "",
+        grade: "",
+        status: "active",
+      })
+      setIsAddingStudent(false)
+      addToast("Student added successfully", "success")
+    } catch (error) {
+      console.error("Error adding student:", error)
+      addToast("Failed to add student. Please try again.", "error")
+    }
+  }
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value)
   }
 
   return (
@@ -66,6 +94,8 @@ export default function StudentsPage() {
               type="search"
               placeholder="Search students..."
               className="w-full sm:w-[250px] rounded-md border border-input bg-background pl-8 pr-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={searchQuery}
+              onChange={handleSearch}
             />
           </div>
           <Button variant="outline" size="icon" className="shrink-0">
@@ -80,46 +110,62 @@ export default function StudentsPage() {
 
       {/* Student Table */}
       <div className="rounded-lg border bg-card">
-        <div className="relative w-full overflow-auto">
-          <table className="w-full caption-bottom text-sm">
-            <thead className="border-b">
-              <tr>
-                <th className="h-12 px-4 text-left font-medium">Name</th>
-                <th className="h-12 px-4 text-left font-medium">Email</th>
-                <th className="h-12 px-4 text-left font-medium">Grade</th>
-                <th className="h-12 px-4 text-left font-medium">Status</th>
-                <th className="h-12 px-4 text-left font-medium">Last Active</th>
-                <th className="h-12 px-4 text-left font-medium w-[70px]"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id} className="border-b hover:bg-muted/50">
-                  <td className="p-4 align-middle font-medium">{student.name}</td>
-                  <td className="p-4 align-middle">{student.email}</td>
-                  <td className="p-4 align-middle">{student.grade}</td>
-                  <td className="p-4 align-middle">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      student.status === 'active' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                    }`}>
-                      {student.status === 'active' ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="p-4 align-middle text-muted-foreground">{student.lastActive}</td>
-                  <td className="p-4 align-middle">
-                    <div className="relative">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[200px]">
+            <Loader size="md" />
+          </div>
+        ) : (
+          <div className="relative w-full overflow-auto">
+            <table className="w-full caption-bottom text-sm">
+              <thead className="border-b">
+                <tr>
+                  <th className="h-12 px-4 text-left font-medium">Name</th>
+                  <th className="h-12 px-4 text-left font-medium">Email</th>
+                  <th className="h-12 px-4 text-left font-medium">Grade</th>
+                  <th className="h-12 px-4 text-left font-medium">Status</th>
+                  <th className="h-12 px-4 text-left font-medium">Last Active</th>
+                  <th className="h-12 px-4 text-left font-medium w-[70px]"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {students.length > 0 ? (
+                  students.map((student) => (
+                    <tr key={student.id} className="border-b hover:bg-muted/50">
+                      <td className="p-4 align-middle font-medium">{student.name}</td>
+                      <td className="p-4 align-middle">{student.email}</td>
+                      <td className="p-4 align-middle">{student.grade}</td>
+                      <td className="p-4 align-middle">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            student.status === "active"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                          }`}
+                        >
+                          {student.status === "active" ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="p-4 align-middle text-muted-foreground">{student.lastActive}</td>
+                      <td className="p-4 align-middle">
+                        <div className="relative">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="p-4 text-center text-muted-foreground">
+                      No students found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Add Student Modal */}
@@ -198,7 +244,7 @@ export default function StudentsPage() {
                       type="radio"
                       name="status"
                       value="active"
-                      checked={newStudent.status === 'active'}
+                      checked={newStudent.status === "active"}
                       onChange={handleInputChange}
                       className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
                     />
@@ -209,7 +255,7 @@ export default function StudentsPage() {
                       type="radio"
                       name="status"
                       value="inactive"
-                      checked={newStudent.status === 'inactive'}
+                      checked={newStudent.status === "inactive"}
                       onChange={handleInputChange}
                       className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
                     />
@@ -233,3 +279,4 @@ export default function StudentsPage() {
     </div>
   )
 }
+

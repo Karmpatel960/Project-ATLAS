@@ -12,7 +12,6 @@ import IntegrationHubPage from './pages/dashboard/IntegrationPage.jsx'
 import './index.css'
 
 import ManageStudentAccountsPage from "./pages/dashboard/ManageStudentAccountsPage.jsx"
-
 import StudentDashboardLayout from "./components/student/StudentDashboard.jsx"
 import StudentDashboardPage from "./pages/student/StudentDashboardPage.jsx"
 import CoursesPage from "./pages/student/CoursesPage.jsx"
@@ -21,8 +20,14 @@ import GradesPage from "./pages/student/GradesPage.jsx"
 import ProfilePage from "./pages/student/ProfilePage.jsx"
 import StudentSettingsPage from "./pages/student/SettingsPage.jsx"
 
+
+import { ThemeProvider } from "./components/ThemeProvider"
+import { ToastProvider } from "./components/ui/ToastContext"
+
 function App() {
   return (
+    <ThemeProvider>
+    <ToastProvider>
     <div className="App">
       <Routes>
         <Route path="/" element={<Home />} />
@@ -124,7 +129,11 @@ function App() {
         />
       </Routes>
     </div>
+     </ToastProvider>
+     </ThemeProvider>
   )
 }
 
 export default App
+
+

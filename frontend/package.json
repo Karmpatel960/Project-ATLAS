@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.8.4",
     "lucide-react": "^0.475.0",
     "npx": "^10.2.2",
     "react": "^19.0.0",
