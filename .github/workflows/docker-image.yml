@@ -1,0 +1,52 @@
+name: Deploy Frontend to EC2 with Terraform
+
+on:
+  push:
+    branches:
+      - release
+      - develop
+  pull_request:
+    branches:
+      - release
+      - develop
+    types: [opened, synchronize]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Terraform CLI
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.0
+
+      # Terraform Init and Apply
+      - name: Terraform Init and Apply
+        run: |
+          cd terraform/frontend
+          terraform init
+          terraform apply -auto-approve
+
+      # Get EC2 IP from Terraform Output
+      - name: Get EC2 IP
+        id: ec2_ip
+        run: |
+          cd terraform/frontend
+          echo "EC2_IP=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
+
+      # SSH into EC2 and deploy Docker container
+      - name: Deploy Dockerized Frontend to EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ env.EC2_IP }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker stop frontend || true
+            docker rm frontend || true
+            docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
