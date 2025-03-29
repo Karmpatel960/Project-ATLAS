@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}
+Admin Page
+{% endblock %}
+{% block content %}
+
+  <main>
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="" class="logo d-flex align-items-center w-auto">
+                  <img src="assets/img/logo.png" alt="">
+                  <span class="d-none d-lg-block">VirtualClassroom</span>
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">We need some more Info</h5>
+                    <p class="text-center small">Please fill the below form</p>
+                  </div>
+
+                  <form class="row g-3 needs-validation" method='POST' novalidate>
+                    {% csrf_token %}
+
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">Gender</label>
+                      <div class="col-sm-12">
+                        <select class="form-select" aria-label="Default select example">
+                          <option selected disabled>Select</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div class="invalid-feedback">Please enter the State!</div>
+                    </div>
+
+
+                    <div class="col-12">
+                        <label for="inputDate" class="col-form-label">Date of Birth</label>
+                        <div class="">
+                          <input type="date" class="form-control ">
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">Institution Name</label>
+                      <input type="text" name="institute" class="form-control" required>
+                      <div class="invalid-feedback">Please enter your Institution!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="yourPassword" class="form-label">State</label>
+                      <div class="col-sm-12">
+                        <select class="form-select" aria-label="Default select example">
+                          <option selected disabled>Select</option>
+                          <option value="1">One</option>
+                          <option value="2">Two</option>
+                          <option value="3">Three</option>
+                        </select>
+                      </div>
+                      <div class="invalid-feedback">Please enter the State!</div>
+                    </div>
+
+
+                    <div class="col-12">
+                      <label for="inputPassword" class="col-form-label">About You</label>
+                      <div class="col-sm-12">
+                        <textarea class="form-control" style="height: 50px"></textarea>
+                        <div class="invalid-feedback">Please tell something about you!</div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="inputPassword" class="col-form-label">Contact Number</label>
+                      <div class="col-sm-12">
+                        <input type="text" class="form-control" required></input>
+                        <div class="invalid-feedback">Please Enter your Contact No.</div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="facultyPic" class="col-form-label">Profile Picture</label>
+                      <div class="col-sm-12">
+                        <input class="form-control" type="file" id="formFile" required>
+                      </div>
+                      <div class="invalid-feedback">Please upload your Profile Picture</div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                      <button class="btn btn-primary w-100" name="submit" type="submit">Submit</button>
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
+
+              <!-- ======= Footer ======= -->
+              {% include 'partials/_footer.html'%}
+              <!-- ======= Footer Ends ======= -->
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+{% endblock %}
