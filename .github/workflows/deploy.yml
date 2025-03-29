@@ -5,11 +5,11 @@ on:
     branches:
       - release
       - develop
-      
-  pull_request: 
-    types:
-      - opened
-      - synchronize
+  pull_request:
+    branches:
+      - release
+      - develop
+    types: [opened, synchronize]
 
 jobs:
   build-and-deploy:
@@ -47,8 +47,6 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Pull Docker image and run it
             docker stop frontend || true
             docker rm frontend || true
-            docker run -d --name frontend -p 80:80 karm/frontend:latest
-
+            docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
