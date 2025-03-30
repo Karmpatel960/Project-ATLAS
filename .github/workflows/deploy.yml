@@ -8,7 +8,7 @@ on:
     branches:
       - release
     types: [closed]
-    
+
 jobs:
   build-and-deploy:
     if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
@@ -28,37 +28,34 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-          
+
       - name: Terraform Init and Apply
         run: |
           cd terraform/frontend
           terraform init
           terraform apply -auto-approve
 
-      # ✅ Extract EC2 IP and use multiline string with random delimiter
+      # ✅ Extract and properly save the EC2 IP to the environment
       - name: Get EC2 IP
-        id: ec2_ip
         run: |
           cd terraform/frontend
-          
-          # Generate a random delimiter
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-
-          # Extract IP and use multiline output syntax
-          IP=$(terraform output -raw ec2_public_ip)
-          
-          echo "ip<<$EOF" >> "$GITHUB_OUTPUT"
-          echo "$IP" >> "$GITHUB_OUTPUT"
-          echo "$EOF" >> "$GITHUB_OUTPUT"
+          IP=$(terraform output -raw ec2_public_ip | tr -d '"')
+          if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "EC2_IP=$IP" >> "$GITHUB_ENV"
+          else
+            echo "Invalid IP extracted: $IP"
+            exit 1
+          fi
 
       - name: Wait for EC2 instance
         run: sleep 60
 
+      # ✅ Use the environment variable correctly with port 22
       - name: Deploy Dockerized Frontend to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ steps.ec2_ip.outputs.ip }}
-          port: 22
+          host: ${{ env.EC2_IP }}   # Use the properly saved environment variable
+          port: 22                   # Explicitly specify port 22
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -66,3 +63,4 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
+
