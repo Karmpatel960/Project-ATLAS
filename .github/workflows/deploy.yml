@@ -1,5 +1,3 @@
-name: Deploy Frontend to EC2 with Terraform
-
 on:
   push:
     branches:
@@ -35,31 +33,40 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
+      - name: Wait for EC2 to be fully ready
+        run: sleep 120
+
       - name: Get EC2 IP
         run: |
           cd terraform/frontend
-          IP=$(terraform output -raw ec2_public_ip 2>/dev/null) # Redirect stderr to null
+          echo "--- Terraform Output (Raw) ---"
+          terraform output
+          echo "--- End Terraform Output (Raw) ---"
+          IP=$(terraform output -raw ec2_public_ip 2>/dev/null)
+          echo "Extracted IP: $IP"
           if [ $? -ne 0 ]; then
-            echo "Error: Terraform output failed."
-            terraform output # Print all outputs for debugging
+            echo "Error: Terraform output -raw ec2_public_ip failed. Exit code: $?"
             exit 1
           fi
           if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "EC2_IP=$IP" >> "$GITHUB_ENV"
+            echo "EC2_IP set to: $IP"
           else
-            echo "Invalid IP extracted: $IP"
+            echo "Error: Invalid IP extracted: $IP"
             exit 1
           fi
 
-      - name: Wait for EC2 instance
-        run: sleep 30
+      - name: Debug GITHUB_ENV
+        run: |
+          echo "--- GITHUB_ENV Contents ---"
+          cat $GITHUB_ENV
+          echo "--- End GITHUB_ENV Contents ---"
 
-      # ✅ Use the environment variable correctly with port 22
       - name: Deploy Dockerized Frontend to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ env.EC2_IP }}   # Use the properly saved environment variable
-          port: 22                   # Explicitly specify port 22
+          host: ${{ env.EC2_IP }}
+          port: 22
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -67,4 +74,3 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
-
