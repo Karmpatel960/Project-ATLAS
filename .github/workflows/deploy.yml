@@ -35,18 +35,12 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # ✅ Extract EC2 IP and sanitize it
+      # ✅ Extract EC2 IP and store it directly in GitHub environment
       - name: Get EC2 IP
         id: ec2_ip
         run: |
           cd terraform/frontend
-          IP=$(terraform output -raw ec2_public_ip | tr -d '"')
-          if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "ip=$IP" >> "$GITHUB_OUTPUT"
-          else
-            echo "Invalid IP extracted: $IP"
-            exit 1
-          fi
+          echo "ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_ENV"
 
       - name: Wait for EC2 instance
         run: sleep 60
@@ -54,7 +48,7 @@ jobs:
       - name: Deploy Dockerized Frontend to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ steps.ec2_ip.outputs.ip }}
+          host: ${{ env.ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -62,3 +56,4 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
+
