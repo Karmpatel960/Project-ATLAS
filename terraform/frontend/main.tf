@@ -1,11 +1,9 @@
+
 provider "aws" {
   region = var.region
   # AWS credentials will be provided by environment variables
 }
 
-# Remove the aws_key_pair resource completely
-
-# Security group for EC2
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2_sg"
   description = "Allow SSH and HTTP access"
@@ -34,7 +32,8 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "frontend" {
   ami                    = "ami-0f58b397bc5c1f2e8"
   instance_type          = "t2.micro"
-  key_name               = var.jenkins-mumbai  # Use existing key name
+  key_name               = var.key_name  # Use existing key name
+
   security_groups        = [aws_security_group.ec2_sg.name]
   tags = {
     Name = "Frontend-Instance"
