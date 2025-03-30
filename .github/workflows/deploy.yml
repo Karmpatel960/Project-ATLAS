@@ -58,6 +58,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ steps.ec2_ip.outputs.ip }}
+          port: 22
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
