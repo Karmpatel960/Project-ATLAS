@@ -35,12 +35,13 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # ✅ Use id output to avoid GitHub environment format issues
+      # ✅ Sanitize EC2 IP extraction
       - name: Get EC2 IP
         id: ec2_ip
         run: |
           cd terraform/frontend
-          echo "ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_OUTPUT"
+          IP=$(terraform output -raw ec2_public_ip | tr -d '\n' | tr -d '\r' | tr -d ' ')
+          echo "ip=$IP" >> "$GITHUB_OUTPUT"
 
       - name: Wait for EC2 instance
         run: sleep 60
@@ -56,4 +57,5 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
+
 
