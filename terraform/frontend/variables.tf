@@ -8,3 +8,4 @@ variable "key_name" {
   type        = string
   default     = "jenkins-mumbai"  # Replace with your AWS key pair name
 }
+

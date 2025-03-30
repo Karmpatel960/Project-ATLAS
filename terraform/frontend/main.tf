@@ -1,14 +1,9 @@
-# Specify the AWS provider with authentication
+
 provider "aws" {
   region = var.region
-  
-  # These will be populated from environment variables:
-  # AWS_ACCESS_KEY_ID
-  # AWS_SECRET_ACCESS_KEY
-  # AWS_SESSION_TOKEN (optional)
+  # AWS credentials will be provided by environment variables
 }
 
-# Security group for EC2
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2_sg"
   description = "Allow SSH and HTTP access"
@@ -38,6 +33,7 @@ resource "aws_instance" "frontend" {
   ami                    = "ami-0f58b397bc5c1f2e8"
   instance_type          = "t2.micro"
   key_name               = var.key_name  # Use existing key name
+
   security_groups        = [aws_security_group.ec2_sg.name]
   tags = {
     Name = "Frontend-Instance"
