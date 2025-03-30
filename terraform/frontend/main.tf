@@ -50,8 +50,3 @@ resource "aws_instance" "frontend" {
     docker run -d -p 80:80 --name frontend karmpatel/vitefrontend:latest
   EOF
 }
-
-output "ec2_public_ip" {
-  description = "Public IP of the EC2 instance"
-  value       = aws_instance.frontend.public_ip
-}
