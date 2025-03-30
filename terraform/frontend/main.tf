@@ -1,12 +1,17 @@
-# Specify the AWS provider
+# Specify the AWS provider with authentication
 provider "aws" {
   region = var.region
+  
+  # These will be populated from environment variables:
+  # AWS_ACCESS_KEY_ID
+  # AWS_SECRET_ACCESS_KEY
+  # AWS_SESSION_TOKEN (optional)
 }
 
 # Create a key pair
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
-  public_key = file(var.public_key_path)
+  public_key = var.public_key_content
 }
 
 # Security group for EC2
@@ -20,14 +25,12 @@ resource "aws_security_group" "ec2_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  
   }
-
   ingress {
     from_port   = 80    # HTTP
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  
   }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -42,11 +45,9 @@ resource "aws_instance" "frontend" {
   instance_type          = "t2.micro"               # Free-tier eligible
   key_name               = aws_key_pair.deployer.key_name
   security_groups        = [aws_security_group.ec2_sg.name]
-
   tags = {
     Name = "Frontend-Instance"
   }
-
   # User data to install Docker and start the container
   user_data = <<-EOF
     #!/bin/bash
@@ -54,6 +55,8 @@ resource "aws_instance" "frontend" {
     sudo yum install docker -y
     sudo service docker start
     sudo usermod -aG docker ec2-user
-    docker run -d -p 80:80 karmpatel/vitefrontend:latest
+    sudo systemctl enable docker
+    docker run -d -p 80:80 --name frontend karmpatel/vitefrontend:latest
   EOF
 }
+
