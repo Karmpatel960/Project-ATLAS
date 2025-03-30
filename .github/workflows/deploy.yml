@@ -35,12 +35,12 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # ✅ Extract and sanitize EC2 IP properly
+      # ✅ Extract EC2 IP and sanitize it
       - name: Get EC2 IP
         id: ec2_ip
         run: |
           cd terraform/frontend
-          IP=$(terraform output -raw ec2_public_ip 2>/dev/null | tr -d '\n' | tr -d '\r' | tr -d ' ')
+          IP=$(terraform output -raw ec2_public_ip | tr -d '"')
           if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "ip=$IP" >> "$GITHUB_OUTPUT"
           else
@@ -62,4 +62,3 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
-
