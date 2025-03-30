@@ -3,8 +3,8 @@ variable "region" {
   default     = "ap-south-1"  # Mumbai region
 }
 
-variable "public_key_content" {
-  description = "Content of the public SSH key"
+variable "key_name" {
+  description = "Name of the existing key pair in AWS"
   type        = string
-  # No default - should be passed as an environment variable
+  default     = "jenkins-mumbai"  # Replace with your AWS key pair name
 }
