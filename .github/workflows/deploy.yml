@@ -35,11 +35,15 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      # ✅ Extract and properly save the EC2 IP to the environment
       - name: Get EC2 IP
         run: |
           cd terraform/frontend
-          IP=$(terraform output -raw ec2_public_ip | tr -d '"')
+          IP=$(terraform output -raw ec2_public_ip 2>/dev/null) # Redirect stderr to null
+          if [ $? -ne 0 ]; then
+            echo "Error: Terraform output failed."
+            terraform output # Print all outputs for debugging
+            exit 1
+          fi
           if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "EC2_IP=$IP" >> "$GITHUB_ENV"
           else
@@ -48,7 +52,7 @@ jobs:
           fi
 
       - name: Wait for EC2 instance
-        run: sleep 60
+        run: sleep 30
 
       # ✅ Use the environment variable correctly with port 22
       - name: Deploy Dockerized Frontend to EC2
