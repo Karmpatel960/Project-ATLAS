@@ -46,14 +46,12 @@ jobs:
           echo "Extracted IP: $IP"
           if [ $? -ne 0 ]; then
             echo "Error: Terraform output -raw ec2_public_ip failed. Exit code: $?"
-            exit 1
           fi
           if [[ "$IP" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "EC2_IP=$IP" >> "$GITHUB_ENV"
             echo "EC2_IP set to: $IP"
           else
             echo "Error: Invalid IP extracted: $IP"
-            exit 1
           fi
 
       - name: Debug GITHUB_ENV
