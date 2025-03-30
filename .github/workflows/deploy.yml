@@ -11,20 +11,17 @@ on:
     
 jobs:
   build-and-deploy:
-    # Only run when a PR is merged (not just closed)
     if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Set up Terraform CLI
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
           
-      # Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -32,33 +29,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
           
-      # Generate SSH key file from secret
-      - name: Create SSH key file
-        run: |
-          echo "${{ secrets.EC2_SSH_PUBLIC_KEY }}" > /tmp/id_rsa.pub
-          echo "PUBLIC_KEY_CONTENT=$(cat /tmp/id_rsa.pub)" >> $GITHUB_ENV
-
-      # Terraform Init and Apply
       - name: Terraform Init and Apply
         run: |
           cd terraform/frontend
           terraform init
-          terraform apply -auto-approve -var="public_key_content=${{ env.PUBLIC_KEY_CONTENT }}"
-        env:
-          TF_VAR_public_key_content: ${{ env.PUBLIC_KEY_CONTENT }}
+          terraform apply -auto-approve
           
-      # Get EC2 IP from Terraform Output
       - name: Get EC2 IP
         id: ec2_ip
         run: |
           cd terraform/frontend
           echo "EC2_IP=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
           
-      # Wait for EC2 instance to initialize
       - name: Wait for EC2 instance
         run: sleep 60
           
-      # SSH into EC2 and deploy Docker container
       - name: Deploy Dockerized Frontend to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
