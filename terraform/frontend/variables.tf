@@ -3,7 +3,8 @@ variable "region" {
   default     = "ap-south-1"  # Mumbai region
 }
 
-variable "public_key_path" {
-  description = "Path to the public SSH key"
-  default     = "~/.ssh/id_rsa.pub"
+variable "key_name" {
+  description = "Name of the existing key pair in AWS"
+  type        = string
+  default     = "jenkins-mumbai"  # Replace with your AWS key pair name
 }
