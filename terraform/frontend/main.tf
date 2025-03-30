@@ -1,18 +1,9 @@
-# Specify the AWS provider with authentication
 provider "aws" {
   region = var.region
-  
-  # These will be populated from environment variables:
-  # AWS_ACCESS_KEY_ID
-  # AWS_SECRET_ACCESS_KEY
-  # AWS_SESSION_TOKEN (optional)
+  # AWS credentials will be provided by environment variables
 }
 
-# Create a key pair
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = var.public_key_content
-}
+# Remove the aws_key_pair resource completely
 
 # Security group for EC2
 resource "aws_security_group" "ec2_sg" {
@@ -39,16 +30,16 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# EC2 Instance
+# EC2 Instance with existing key pair
 resource "aws_instance" "frontend" {
-  ami                    = "ami-0f58b397bc5c1f2e8"   # Free-tier AMI for Mumbai (Amazon Linux 2023)
-  instance_type          = "t2.micro"               # Free-tier eligible
-  key_name               = aws_key_pair.deployer.key_name
+  ami                    = "ami-0f58b397bc5c1f2e8"
+  instance_type          = "t2.micro"
+  key_name               = var.jenkins-mumbai  # Use existing key name
   security_groups        = [aws_security_group.ec2_sg.name]
   tags = {
     Name = "Frontend-Instance"
   }
-  # User data to install Docker and start the container
+
   user_data = <<-EOF
     #!/bin/bash
     sudo yum update -y
@@ -60,3 +51,7 @@ resource "aws_instance" "frontend" {
   EOF
 }
 
+output "ec2_public_ip" {
+  description = "Public IP of the EC2 instance"
+  value       = aws_instance.frontend.public_ip
+}
