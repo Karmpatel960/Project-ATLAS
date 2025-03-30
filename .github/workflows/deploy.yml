@@ -21,7 +21,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
-          
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -34,20 +34,21 @@ jobs:
           cd terraform/frontend
           terraform init
           terraform apply -auto-approve
-          
+
+      # ✅ Use id output to avoid GitHub environment format issues
       - name: Get EC2 IP
         id: ec2_ip
         run: |
           cd terraform/frontend
-          echo "EC2_IP=$(terraform output -raw ec2_public_ip)" >> $GITHUB_ENV
-          
+          echo "ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_OUTPUT"
+
       - name: Wait for EC2 instance
         run: sleep 60
-          
+
       - name: Deploy Dockerized Frontend to EC2
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ env.EC2_IP }}
+          host: ${{ steps.ec2_ip.outputs.ip }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
@@ -55,3 +56,4 @@ jobs:
             docker rm frontend || true
             docker pull karmpatel/vitefrontend:latest
             docker run -d --name frontend -p 80:80 karmpatel/vitefrontend:latest
+
